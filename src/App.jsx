@@ -87,23 +87,24 @@ const App = () => {
     function handleSubmit(e) {
         e.preventDefault();
         // Add contact submission logic here
+
     }
 
     return (
         <main className="page" data-testid="page-root">
             <header className="page__header">
-                <h1 className="page__title">Phonebook Challenge</h1>
-                <p className="page__subtitle">Build a simple contact directory</p>
+                <h1 className="page__title">Marvel Cinematic Phonebook</h1>
+                <p className="page__subtitle">Contact Directory of your Favorite Heroes</p>
             </header>
 
             <section className="search" aria-labelledby="search-heading">
-                <h2 id="search-heading">Search Contacts</h2>
+                <h2 id="search-heading">Search SuperHeroes</h2>
                 <div className="search__controls">
                     <label htmlFor="search-input">Search</label>
                     <input
                         id="search-input"
                         type="search"
-                        placeholder="Search by name or phone"
+                        placeholder="Search by Hero name, phone, or email (try 'Tony')"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         data-testid="search-input"
