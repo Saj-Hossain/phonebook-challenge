@@ -124,7 +124,7 @@ const App = () => {
             </section>
 
             <section className="form" aria-labelledby="form-heading">
-                <h2 id="form-heading">Add a Contact</h2>
+                <h2 id="form-heading">Add a Hero Contact</h2>
                 <form className="form__body" onSubmit={handleSubmit} noValidate>
                     <div className="field">
                         <label htmlFor="name">Name</label>
@@ -132,6 +132,7 @@ const App = () => {
                             id="name"
                             name="name"
                             value={form.name}
+                             placeholder="e.g., Tony Stark"
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                             required
                             minLength={2}
@@ -157,6 +158,7 @@ const App = () => {
                             id="email"
                             name="email"
                             type="email"
+                            placeholder="e.g., hero@domain.com"
                             value={form.email}
                             onChange={(e) =>
                                 setForm({ ...form, email: e.target.value })
