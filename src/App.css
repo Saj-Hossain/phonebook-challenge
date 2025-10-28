@@ -9,16 +9,26 @@
     gap: 0.5rem;
     margin-bottom: 1.5rem;
     text-align: left;
+    padding: 1rem;
+    border-radius: var(--radius);
+    background:linear-gradient(180deg, rgba(212, 209, 209, 0.35), rgba(247, 246, 246, 0.55))
+     var(--header-bg-image);
+    background-size: cover;
+    background-position: center;
+    
+    
 }
 
 .page__title {
     margin: 0;
     font-size: 2rem;
+    font-family : 'Marvel', sans-serif;
+    color: var(--marvel-red);
 }
 
 .page__subtitle {
     margin: 0;
-    color: #888;
+    color: var(--muted);
 }
 
 .toolbar {
@@ -32,9 +42,11 @@
     border-radius: 8px;
     border: 1px solid #3a3a3a;
     padding: 0.5rem 0.9rem;
-    background: #1a1a1a;
-    color: inherit;
+    background: linear-gradient(180deg, #2b2b2b, #171717);
+    color: #fff;
     cursor: pointer;
+    transition: transform .10s ease, box-shadow .10s ease;
+;
 }
 
 .theme {
@@ -47,7 +59,7 @@
 .search {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid #333;
+    border-top: 1px solid #e6e2e2;
 }
 
 .search__controls {
@@ -58,7 +70,8 @@
 }
 
 .search__results {
-    color: #888;
+    color: var(--muted);
+    margin-top: 0.5rem;
 }
 
 .contacts {
@@ -75,26 +88,35 @@
 }
 
 .contact-card {
-    border: 1px solid #333;
-    border-radius: 12px;
+    border: 1px solid #c11010;
+    border-radius: var(--radius);
     padding: 1rem;
-    background: #111;
+    background: #bebbbb;
+    gap:0.5rem;
+    display: flex; 
+    align-items: center;
+    transition: transform .10s ease, box-shadow .10s ease;
 }
 
 .contact-card__name {
     margin: 0 0 0.25rem 0;
     font-size: 1.1rem;
+    font-weight: bold;
+    font-family: sans-serif;
+    color:#fff
 }
 
 .contact-card__email,
 .contact-card__phone {
-    margin: 0.1rem 0;
-    color: #aaa;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+
 }
 
 .form {
     margin-top: 2rem;
-    border-top: 1px solid #333;
+    border-top: 1px solid #ece4e4;
     padding-top: 1rem;
 }
 
@@ -117,6 +139,7 @@ select {
     padding: 0.5rem 0.75rem;
     background: #1a1a1a;
     color: inherit;
+    transition: box-shadow .10s ease;
 }
 
 .form__actions {
@@ -125,9 +148,12 @@ select {
 }
 
 .page__footer {
-    margin-top: 3rem;
-    color: #777;
-    text-align: center;
+  background-image:  url ('./assets/marvel-banner.jpg' );
+  background-color: #0a0a0a;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 180px;
+  padding-bottom: 4rem;
 }
 
 @media (max-width: 720px) {

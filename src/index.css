@@ -1,12 +1,12 @@
 :root {
-  --bg: #060608;
+  --bg: #c1c1c7;
   --card: #0b0b0c;
   --muted: #9aa0a6;
   --accent: #e62429; /* Bright Marvel red */
   --accent-2: #f4c542; /* golden accent */
-  --radius: 10px;
+  --radius: 12px;
   --gap: 1rem;
-  --header-bg-image: url('./assets/marvel-banner.jpg');
+  --header-bg-image: <img src= './assets/marvel-banner.jpg' alt='Marvel Banner' /> ;
   font-size: 18px;
 }
 
@@ -31,7 +31,7 @@ body{
     background: linear-gradient(180deg, #050506 0%, #0d0d0f 100%);
     color: #eef0f1;
     font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    line-height: 1.45;
+    line-height: 1.50;
    color: var(--fg);
     background: var(--bg);
 }
