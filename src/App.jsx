@@ -24,10 +24,15 @@ const App = () => {
 
     useEffect(() => {}, []);
 
-    const [query, setQuery] = useState("");
+        const [query, setQuery] = useState("");
 
-    const [form, setForm] = useState({ name: "", phone: "", email: "" });
-      const filtered = useMemo(() => {
+        const [form, setForm] = useState({ name: "", phone: "", email: "", photo: "" });
+
+        // Pagination: show one contact per page
+        const [currentPage, setCurrentPage] = useState(1);
+        const PER_PAGE = 1;
+
+        const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return contacts;
     return contacts.filter(
@@ -37,13 +42,24 @@ const App = () => {
         (c.email || "").toLowerCase().includes(q)
     );
   }, [contacts, query]);
+
+    // Recompute total pages and clamp current page when filtered results change
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+    useEffect(() => {
+        setCurrentPage((p) => Math.min(Math.max(1, p), totalPages));
+    }, [totalPages]);
     function handleSubmit(e) {
         e.preventDefault();
         // Add contact submission logic here
- if (!form.name || !form.phone) return;
-    const id = Date.now();
-    const photo = `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=111&color=fff&size=128`;
-    setContacts((s) => [{ id, name: form.name, phone: form.phone, email: form.email, photo }, ...s]);
+        if (!form.name || !form.phone) return;
+        const id = Date.now();
+        // Use provided photo URL if present, otherwise fall back to ui-avatars
+        const photo = form.photo
+            ? form.photo
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=111&color=fff&size=128`;
+        setContacts((s) => [{ id, name: form.name, phone: form.phone, email: form.email, photo }, ...s]);
+    // show the newest contact when adding one (page 1)
+    setCurrentPage(1);
     setForm({ name: "", phone: "", email: "" });
     }
     return (
@@ -68,30 +84,58 @@ const App = () => {
                 </div>
 
                 <p className="search__results" data-testid="results-count">
-                    Showing {contacts.length}{" "}
-                    {contacts.length === 1 ? "result" : "results"}
+                    Showing {filtered.length}{" "}
+                    {filtered.length === 1 ? "result" : "results"}
                     {loading ? " (loading...)" : ""}
                     {error ? ` (error: ${error})` : ""}
+                    {"  "}
+                    Page {currentPage} of {totalPages}
                 </p>
             </section>
 
 
             <section className="contacts" aria-labelledby="contacts-heading">
                 <h2 id="contacts-heading">Contacts</h2>
-                 <div className="contacts_grid">
-       {FALLBACK_CONTACTS.map((contact) => {
-    return (
-        <div className="contact-card contact--batman">
-            <img
-                src={contact.photo}
-                alt={contact.name}
-            />
-            <h3>{contact.name}</h3>
-            <p>{contact.phone}</p>
-            <p>{contact.email}</p>
-        </div> 
-    );
-})} </div>
+                <div className="contacts_grid">
+                    {/* only shiw contacts for the current page (PER_PAGE = 1) */}
+                    {(() => {
+                        const start = (currentPage - 1) * PER_PAGE;
+                        const pageItems = filtered.slice(start, start + PER_PAGE);
+                        if (pageItems.length === 0) {
+                            return <p>No contacts found.</p>;
+                        }
+                        return pageItems.map((contact) => (
+                            <div key={contact.id} className="contact-card contact--batman">
+                                <img src={contact.photo} alt={contact.name} />
+                                <h3>{contact.name}</h3>
+                                <p>{contact.phone}</p>
+                                <p>{contact.email}</p>
+                            </div>
+                        ));
+                    })()}
+                </div>
+
+                <div className="pagination" style={{ marginTop: 12 }}>
+                    <button
+                        className="btn"
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        data-testid="btn-prev"
+                    >
+                        Previous
+                    </button>
+                    <span style={{ margin: "0 8px" }}>
+                        {currentPage} / {totalPages}
+                    </span>
+                    <button
+                        className="btn"
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        data-testid="btn-next"
+                    >
+                        Next
+                    </button>
+                </div>
 
             </section>
 
@@ -135,6 +179,17 @@ const App = () => {
                             onChange={(e) =>
                                 setForm({ ...form, email: e.target.value })
                             }
+                        />
+                    </div>
+                    <div className="field">
+                        <label htmlFor="photo">Photo URL (optional)</label>
+                        <input
+                            id="photo"
+                            name="photo"
+                            type="url"
+                            placeholder="https://example.com/hero.jpg"
+                            value={form.photo}
+                            onChange={(e) => setForm({ ...form, photo: e.target.value })}
                         />
                     </div>
                     <div className="form__actions">
