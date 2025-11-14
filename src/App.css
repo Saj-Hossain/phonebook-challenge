@@ -11,7 +11,7 @@
     text-align: left;
     padding: 1rem;
     border-radius: var(--radius);
-    background:linear-gradient(180deg, rgba(212, 209, 209, 0.35), rgba(247, 246, 246, 0.55))
+    background:linear-gradient(180deg, rgba(245, 117, 117, 0.35), rgba(54, 41, 231, 0.55))
      var(--header-bg-image);
     background-size: cover;
     background-position: center;
@@ -137,7 +137,7 @@ select {
     border-radius: 8px;
     border: 1px solid #3a3a3a;
     padding: 0.5rem 0.75rem;
-    background: #1a1a1a;
+    background: #e4e2e2;
     color: inherit;
     transition: box-shadow .10s ease;
 }
@@ -149,7 +149,7 @@ select {
 
 .page__footer {
   background-image:  url ('./assets/marvel-banner.jpg' );
-  background-color: #0a0a0a;
+  background-color: var(--muted); ;
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: 180px;

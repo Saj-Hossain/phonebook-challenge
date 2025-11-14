@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
+import marvelBanner from "./assets/marvel-banner.jpg";
+import avengersSilhouette from "./assets/Avengers silhouette.jpg";
 
 const FALLBACK_CONTACTS = [
   { id: 1, name: "Tony Stark", phone: "(555) 000-0001", email: "tony@starkindustries.com", photo: "https://ui-avatars.com/api/?name=Tony+Stark&background=000&color=fff&size=128" },
@@ -18,53 +20,105 @@ const App = () => {
     const [contacts, setContacts] = useState(FALLBACK_CONTACTS);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({});
 
   
    
 
-    useEffect(() => {}, []);
+    // Load contacts from /data/contacts.json on mount. If fetch fails, fall back to the hardcoded list.
+    useEffect(() => {
+        let mounted = true;
+        async function loadContacts() {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch("/data/contacts.json");
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                const withPhotos = (data || []).map((c) => ({
+                    ...c,
+                    photo:
+                        c.photo ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=111&color=fff&size=128`,
+                }));
+                if (mounted) setContacts(withPhotos);
+            } catch (err) {
+                console.warn("Could not fetch contacts.json, falling back:", err);
+                if (mounted) {
+                    setError("Failed to load contacts, using fallback data.");
+                    setContacts(FALLBACK_CONTACTS);
+                }
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        }
+        loadContacts();
+        return () => {
+            mounted = false;
+        };
+    }, []);
 
         const [query, setQuery] = useState("");
 
-        const [form, setForm] = useState({ name: "", phone: "", email: "", photo: "" });
+        const [form, setForm] = useState({ name: "", phone: "", email: "" });
 
         // Pagination: show one contact per page
         const [currentPage, setCurrentPage] = useState(1);
         const PER_PAGE = 1;
 
-        const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return contacts;
-    return contacts.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.phone.toLowerCase().includes(q) ||
-        (c.email || "").toLowerCase().includes(q)
-    );
-  }, [contacts, query]);
+                // Search filter: case-insensitive by name OR phone
+                const filtered = useMemo(() => {
+                        const q = query.trim().toLowerCase();
+                        if (!q) return contacts;
+                        return contacts.filter((c) =>
+                                (c.name || "").toLowerCase().includes(q) ||
+                                (c.phone || "").toLowerCase().includes(q)
+                        );
+                }, [contacts, query]);
 
     // Recompute total pages and clamp current page when filtered results change
     const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
     useEffect(() => {
         setCurrentPage((p) => Math.min(Math.max(1, p), totalPages));
     }, [totalPages]);
+    function validateForm(values) {
+        const errs = {};
+        if (!values.name || values.name.trim().length < 2) {
+            errs.name = "Name is required and must be at least 2 characters.";
+        }
+        if (!values.phone || values.phone.trim().length === 0) {
+            errs.phone = "Phone is required.";
+        }
+        if (values.email && !values.email.includes("@")) {
+            errs.email = "Email must include an @ character.";
+        }
+        return errs;
+    }
+
     function handleSubmit(e) {
         e.preventDefault();
-        // Add contact submission logic here
-        if (!form.name || !form.phone) return;
+        const errs = validateForm(form);
+        if (Object.keys(errs).length > 0) {
+            setValidationErrors(errs);
+            return;
+        }
+        setValidationErrors({});
         const id = Date.now();
-        // Use provided photo URL if present, otherwise fall back to ui-avatars
-        const photo = form.photo
-            ? form.photo
-            : `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=111&color=fff&size=128`;
+        const photo = `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=111&color=fff&size=128`;
         setContacts((s) => [{ id, name: form.name, phone: form.phone, email: form.email, photo }, ...s]);
-    // show the newest contact when adding one (page 1)
-    setCurrentPage(1);
-    setForm({ name: "", phone: "", email: "" });
+        // show the newest contact when adding one (page 1)
+        setCurrentPage(1);
+        setForm({ name: "", phone: "", email: "" });
     }
     return (
         <main className="page" data-testid="page-root">
             <header className="page__header">
+                <img
+                    src={marvelBanner}
+                    alt="Marvel banner"
+                    className="page__banner"
+                    style={{ maxWidth: "100%", height: "auto", marginBottom: 12 }}
+                />
                 <h1 className="page__title">Marvel Cinematic Phonebook</h1>
                 <p className="page__subtitle">Contact Directory of your Favorite Heroes</p>
             </header>
@@ -181,17 +235,6 @@ const App = () => {
                             }
                         />
                     </div>
-                    <div className="field">
-                        <label htmlFor="photo">Photo URL (optional)</label>
-                        <input
-                            id="photo"
-                            name="photo"
-                            type="url"
-                            placeholder="https://example.com/hero.jpg"
-                            value={form.photo}
-                            onChange={(e) => setForm({ ...form, photo: e.target.value })}
-                        />
-                    </div>
                     <div className="form__actions">
                         <button className="btn" type="submit" data-testid="btn-add">
                             Add Contact
@@ -201,9 +244,14 @@ const App = () => {
             </section>
 
             <footer className="page__footer">
+                <img
+                    src={avengersSilhouette}
+                    alt="Avengers silhouette"
+                    className="footer__silhouette"
+                    style={{ height: 300, opacity: 0.9, display: "block", margin: "8px auto" }}
+                />
                 <small>
-                    Starter provided. Complete tasks per README and make this page
-                    shine.
+                    Keep in touch with your favorite Marvel heroes! &copy; 2025 Marvel Cinematic Phonebook
                 </small>
             </footer>
         </main>
